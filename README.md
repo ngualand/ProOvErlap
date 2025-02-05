@@ -42,7 +42,7 @@ python3 prooverlap.py --help
 
 Options:
 
-  -h, --help            show this help message and exit. 
+  -h, --help            show this help message and exit.   
   --mode MODE           Define mode: intersect or closest, intersect count the number of overlapping elements while closest test the distance. In closest if a feature
                         overlap a target the distance is 0  
   --input INPUT         Input bed file, must contain 6 column, name and score can be placeholder and are not used, strand is used only if some strandess test are requested  
