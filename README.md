@@ -77,6 +77,6 @@ Options:
                         must be stored as 4th column in bed file, i.e name field  
 
 # Development 
-ProOvErlap was developed by Nicolò Gualandi (former post-doc in the Epigenomics Laboratory of Prof. Claudio Brancolini @ UniUd) and Alessio Bertozzo (PhD student in the Epigenomics Laboratory of Prof. Claudio Brancolini @ UniUd), under the supervision of Prof. Claudio Brancolini.  
+ProOvErlap was developed by Nicolò Gualandi (former post-doc in the Laboratory of Prof. Claudio Brancolini @ UniUd) and Alessio Bertozzo (PhD student in the Laboratory of Prof. Claudio Brancolini @ UniUd), under the supervision of Prof. Claudio Brancolini (Professor of Cell Biology, Department of Medicine, Università degli Studi di Udine, https://people.uniud.it/page/claudio.brancolini)  
 
 ProOvErlap is actively being improved. If you would like to contribute, we welcome your comments and feedback.  
