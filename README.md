@@ -40,7 +40,7 @@ R Libraries:
 
 # Usage:
 
-'''
+```
 usage: prooverlap.py [-h] --mode MODE --input INPUT --targets TARGETS [--background BACKGROUND] [--randomization RANDOMIZATION] [--genome GENOME] [--tmp TMP]
                      [--outfile OUTFILE] --orientation ORIENTATION [--ov_fraction OV_FRACTION] [--generate_bg] [--exclude_intervals EXCLUDE_INTERVALS] [--exclude_ov]
                      [--exclude_upstream] [--exclude_downstream] [--test_AT_GC] [--test_length] [--GenomicLocalization] [--gtf GTF] [--bed BED]
@@ -77,7 +77,7 @@ options:
                         provide a GTF file to extract genomic regions (--gtf), alternatively directly provide a bed file (--bed) with custom annotations
   --gtf GTF             GTF file, only to test genomic localization of founded overlap, gtf file will be used to create genomic regions: promoter, tss, exons, intron, 3UTR
                         and 5UTR
-'''
+```
 
 python3 prooverlap.py --help
 
