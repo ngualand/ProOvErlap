@@ -90,14 +90,14 @@ ProOvErlap supports the creation of two main types of graphical outputs (althoug
 
 ```
 Density_plot.R: Required arguments: 
-input_table: the main output of Enrichard.py "ex: Results.txt",
-randomizations: auto generated output of EnricharD.py containing the randomization table "ex: Tables.txt",
-test: mode used in EnricharD.py, it must be intersect or closest (default: intersect)
+input_table: the main output of prooverlap.py "ex: Results.txt",
+randomizations: auto generated output of prooverlap.py containing the randomization table "ex: Tables.txt",
+test: mode used in prooverlap.py, it must be intersect or closest (default: intersect)
 outfile: name of the suffix of output file (default: Density_plot)
 format: format used to save the output file, could be png, pdf or svg (default: png)
 
 Heatmap.R: Required arguments:
-input_table: main output of EnricharD.py when the option "GenomicLocalization" is set
+input_table: main output of prooverlap.py when the option "GenomicLocalization" is set
 outfile: name of output file (default = "Heatmap")
 format: format used to save the output file, could be png, pdf or svg (default: png)
 title: title of the plot (default: "")
