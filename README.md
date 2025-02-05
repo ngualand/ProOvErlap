@@ -30,6 +30,11 @@ R Libraries:
 - tidyverse
 - argparse
 - ggplot2
+- AnnotationHub
+- GenomicRanges
+- rtracklayer
+- GenomicFeatures
+- Biostrings
 
 # Usage:
 
@@ -70,3 +75,8 @@ Options:
                         and 5UTR
   --bed BED             BED file, only to test genomic localization of founded overlap, bed file will be used to test enrichment in different genomic regions, annotation
                         must be stored as 4th column in bed file, i.e name field
+
+# Development 
+ProOvErlap was developed by Nicolò Gualandi (former post-doc in the Epigenomics Laboratory of Prof. Claudio Brancolini @ UniUd) and Alessio Bertozzo (PhD student in the Epigenomics Laboratory of Prof. Claudio Brancolini @ UniUd), under the supervision of Prof. Claudio Brancolini.
+
+ProOvErlap is actively being improved. If you would like to contribute, we welcome your comments and feedback.
