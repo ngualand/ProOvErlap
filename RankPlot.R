@@ -17,11 +17,11 @@ if (length(args) < 1) {
 RankPlot <- function(forplot) {
   
   # Convert string inputs to numeric vectors
-  ES_values <- as.numeric(unlist(strsplit(forplot$ES_values[1], "\\|")))
-  hit_indices <- as.numeric(unlist(strsplit(forplot$hit_indices[1], "\\|")))
-  null_ES <- as.numeric(unlist(strsplit(forplot$Null_ES[1], "\\|")))
+  ES_values <- as.numeric(forplot$ES_values[!is.na(forplot$ES_values)])
+  hit_indices <- as.numeric(forplot$hit_indices)
+  null_ES <- as.numeric(forplot$Null_ES)
   ES <- as.numeric(forplot$ES[1])
-  Pval <- as.numeric(forplot$Pval[1])  # Extract the P-value
+  Pval <- as.numeric(forplot$Pval[1])  
   
   # Create a data frame for ES values
   es_df <- data.frame(
@@ -44,8 +44,7 @@ RankPlot <- function(forplot) {
       title = paste("Rank Enrichment Plot\nES =", round(ES, 3), "P =", formatC(Pval, format = "e", digits = 2))
     ) +
     theme_minimal() +
-    theme(plot.margin = margin(0, 0, 0, 0), 
-          panel.background = element_rect(fill = "white", color = NA),
+    theme(#panel.background = element_rect(fill = "white", color = NA),
           plot.background = element_rect(fill = "white", color = NA))  # No extra margin, occupy all space
   
   
@@ -73,8 +72,8 @@ RankPlot <- function(forplot) {
 RankPlot_closest <- function(forplot) {
   
   # Convert string inputs to numeric vectors
-  cumulative_real <- as.numeric(unlist(strsplit(forplot$cumulative_real[1], "\\|")))
-  mean_shuffle_cdf <- as.numeric(unlist(strsplit(forplot$mean_shuffle_cdf[1], "\\|")))
+  cumulative_real <- as.numeric(forplot$cumulative_real)
+  mean_shuffle_cdf <- as.numeric(forplot$mean_shuffle_cdf)
   x <- seq_along(cumulative_real)
   
   # Extract ES and P-value for annotation
@@ -133,10 +132,4 @@ if (args[1] == "closest"){
   ggsave(plot = plot, filename = paste0(args[3], ".", args[4]), 
          width = as.numeric(args[5]), height = as.numeric(args[6]))
 }
-
-
-
-
-
-
 
