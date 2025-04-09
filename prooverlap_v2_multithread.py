@@ -65,7 +65,7 @@ def create_directory(folder_path):
         os.makedirs(folder_path)
         print(f"Directory created: {folder_path}")
     else:
-        print("dir exists, use:" + folder_path)
+        print("Directory exists, use: " + folder_path)
 
 #Check input parameters
 def check_input_parameters(mode,w,alpha):
@@ -78,9 +78,11 @@ def check_input_parameters(mode,w,alpha):
     
     if w > 1 or w < 0:
         print("w must be between 0 and 1, exit")
+        print("Exit")
         sys.exit() 
     if alpha > 1 or alpha < 0:
         print("alpha must be between 0 and 1, exit")
+        print("Exit")
         sys.exit() 
 
 #Read bed file, if have more than 6 columns return only the first 6 columns
@@ -121,14 +123,11 @@ def test_closeness(bed,target,targetname,background,ov_fraction, randomization, 
     s = get_params_strand(strandness)["s"]
     S = get_params_strand(strandness)["S"]
     if exclude_intervals is not None:
-        print("Running closest in " + strandness + "mode and exclude intervals from ...." + exclude_intervals)
         real_count = statistics.mean([abs(x) for x in bed.sort().intersect(b = pybedtools.BedTool(exclude_intervals),s = s, S = S, v = True).closest(b = target.sort().intersect(b = pybedtools.BedTool(exclude_intervals),s = s, S = S, v = True), d=True,s=s,S=S,f=ov_fraction, io=exclude_ov, iu=exclude_upstream, id=exclude_downstream, D="a").to_dataframe(header=None).iloc[:,12].to_list()])
-        print("Mean real distance is {0} using {1} elements".format(real_count, strandness))
         random_count = []
         background_df = background.intersect(b = pybedtools.BedTool(exclude_intervals), s = s, S = S, v = True).to_dataframe(header=None)
     else:    
         real_count = statistics.mean([abs(x) for x in bed.sort().closest(b = target.sort(), d=True,s=s,S=S, f=ov_fraction, io=exclude_ov, iu=exclude_upstream, id=exclude_downstream, D="a").to_dataframe().iloc[:,12].to_list()])
-        print("Mean real distance is {0} for {1} elements".format(real_count, strandness))
         random_count = []
         background_df = background.to_dataframe(header = None)        
     with Pool(processes=thread) as pool:  
@@ -145,20 +144,14 @@ def test_closeness_random_bg(bed, target, targetname, ov_fraction, randomization
     s = get_params_strand(strandness)["s"]
     S = get_params_strand(strandness)["S"]  
     if exclude_intervals is not None:
-        print("Excluding intervals")
         real_count = statistics.mean([abs(x) for x in bed.intersect(b = pybedtools.BedTool(exclude_intervals), v = True, s=s, S=S).sort().closest(b = target.sort().intersect(b = pybedtools.BedTool(exclude_intervals),s = s, S = S, v = True), d=True,s=s, S=S, f=ov_fraction, io=exclude_ov, iu=exclude_upstream, id=exclude_downstream, D="a").to_dataframe(header=None).iloc[:,12].to_list()])
-        print("Mean real distance is: {0}, for {1} ".format(real_count, strandness))
     else:
-        print("Not excluding intervals")
-        real_count = statistics.mean([abs(x) for x in bed.sort().closest(b = target.sort(), d=True,s=s,S=S, f=ov_fraction, io=exclude_ov, iu=exclude_upstream, id=exclude_downstream, D="a").to_dataframe(header=None).iloc[:,12].to_list()])
-        print("Mean real distance is: {0}, for {1} ".format(real_count, strandness))   
+        real_count = statistics.mean([abs(x) for x in bed.sort().closest(b = target.sort(), d=True,s=s,S=S, f=ov_fraction, io=exclude_ov, iu=exclude_upstream, id=exclude_downstream, D="a").to_dataframe(header=None).iloc[:,12].to_list()])  
     input_bed_file = bed.fn
     existing_intervals, mean_length, chrom_count = read_bed_file(input_bed_file)
     if exclude_intervals is not None:
-        print("Exclude intervals")
         exclude_intervals_bed = read_exclude_bed_file(exclude_intervals)
     else:
-        print("Not excluding")
         exclude_intervals_bed = None
     num_random_intervals = len(existing_intervals)
     with Pool(processes=thread) as pool:
@@ -427,12 +420,10 @@ def test_enrichement(bed,target,targetname, background,ov_fraction, randomizatio
     if exclude_intervals is not None:
         real = bed.intersect(b = pybedtools.BedTool(exclude_intervals), v =True, s=s, S=S).intersect(b = target, u = True, s = s, S=S, f = ov_fraction)
         real_count = len(real)
-        print("There are {0} {1} overlapping elements".format(real_count,strandness))
         background_df = background.intersect(b = pybedtools.BedTool(exclude_intervals),v =True, s=s, S=S).to_dataframe(header=None)   
     else:
         real = bed.intersect(b = target, u = True, s = s, S=S, f = ov_fraction)
         real_count = len(real)
-        print("There are {0} {1} overlapping elements".format(real_count, strandness))
         background_df = background.to_dataframe(header=None)       
     with Pool(processes=thread) as pool:  
         args = [(background_df, bed, target, s, S, ov_fraction)] * randomization
@@ -455,7 +446,6 @@ def test_enrichement_regions(bed,target,targetname,background,ov_fraction, rando
             real = bed.intersect(b = pybedtools.BedTool(exclude_intervals), v =True, s=s, S=S).intersect(b = target, u = True, s = s, S=S, f = ov_fraction).intersect(b = pybedtools.BedTool.from_dataframe(regions_dict[region]), u = True, s = s, S=S, f = ov_fraction)
             real_count = len(real)
             real_overlap = len(bed.intersect(b = pybedtools.BedTool(exclude_intervals), v =True, s=s, S=S).intersect(b = target, u = True, s = s, S=S, f = ov_fraction))
-            print("There are {0} {1} overlapping elements located in {2}".format(real_count,strandness,region))
             random_count = []
             background_df = background.intersect(b = pybedtools.BedTool(exclude_intervals),v =True, s=s, S=S).intersect(b = target, u = True, s = s, S=S, f = ov_fraction).to_dataframe()
         else:
@@ -472,7 +462,6 @@ def test_enrichement_regions(bed,target,targetname,background,ov_fraction, rando
         pvalue = compute_pvalue(zscore)
         table = save_tables(real_count, random_count, strandness, targetname + "||" + region , table)
         frame = save_results(zscore,strandness,pvalue, targetname + "||" + region , real_count, statistics.mean(random_count), statistics.stdev(random_count), frame)
-        print("tables saved")
     return frame, table
 
 
@@ -904,7 +893,6 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
         for orientation in orientations:
             for target in targets.split(","):
                 targetname = os.path.basename(target)
-                print(targetname)
                 targetfile = pybedtools.BedTool.from_dataframe(get_bed_file(target), header = False)
                 res = test_enrichement_random_bg(bedfile,targetfile,targetname,ov_fraction,randomization, frame, table, strandness= orientation, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
@@ -995,7 +983,6 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
 
         for orientation  in orientations:
             for target in targets.split(","):
-                print("Running test")
                 res, forplot = test_enrichement_rank(input,target,ov_fraction, randomization, strandness=orientation,exclude_intervals = exclude_intervals, ascending = args.Ascending_RankOrder, WeightRanking = WeightRanking, alpha = alpha, w = w, thread = thread)
                 frame = pd.concat([frame, res])
         
