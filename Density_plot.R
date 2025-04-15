@@ -5,11 +5,13 @@ library(argparse, verbose = F)
 #lettura argomenti
 parser <- ArgumentParser()
 
-parser$add_argument("--input_table", help = "Main output of EnrichaRd.py")
-parser$add_argument("--randomizations", help = "Tables.txt")
+parser$add_argument("--input_table", help = "Main output of ProOvErlap")
+parser$add_argument("--randomizations", help = "Tables_Intersect|Closest.txt")
 parser$add_argument("--test", help = "intersect or closest", default = "intersect")
 parser$add_argument("--outfile", help = "Name for output file, default: Plot", default = "Density_plot")
 parser$add_argument("--format", help = "Format of plot file, default: png", default = "png")
+parser$add_argument("--width", help = "4", default = "4", type="numeric")
+parser$add_argument("--heigth", help = "3", default = "3", type="numeric")
 
 
 args <- parser$parse_args()
@@ -31,7 +33,7 @@ Results <- read_delim(args$input_table, col_names = T)
 
 
 #Density plot
-makeDensityplot <- function(Zscore, Type, Pvalue, Real, Random, Name, Outfile, Format) {
+makeDensityplot <- function(Zscore, Type, Pvalue, Real, Random, Name, Outfile, Format, width, heigth) {
 
     #seleziona le righe del df con le randomizzazioni solo per il target della corrispondente riga di output
     random_df_name <- randomizations %>%
@@ -66,10 +68,9 @@ makeDensityplot <- function(Zscore, Type, Pvalue, Real, Random, Name, Outfile, F
     xlab(Xlab) +
     theme_bw(base_size = 10)
 
-ggsave(plot = Plot, filename = str_c(Outfile,"_",Name,"_",Type,".",Format), dpi = 300, height = 3, width = 4) 
-#ggsave(plot = Plot, filename = str_c(Outfile,Name,"_",Type,".png"), dpi = 300, height = 3, width = 4)
+ggsave(plot = Plot, filename = str_c(Outfile,"_",Name,"_",Type,".",Format), dpi = 300, height = heigth, width = width) 
 }    
 
-apply(Results, 1, function(x) makeDensityplot(as.numeric(x["Zscore"]), x["Type"], as.numeric(x["P.value"]), as.numeric(x["Real"]), as.numeric(x["Random"]), x["Target"], args$outfile, args$format))
+apply(Results, 1, function(x) makeDensityplot(as.numeric(x["Zscore"]), x["Type"], as.numeric(x["P.value"]), as.numeric(x["Real"]), as.numeric(x["Random"]), x["Target"], args$outfile, args$format, args$width, args$heigth))
 
 })

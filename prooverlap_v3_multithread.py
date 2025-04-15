@@ -898,7 +898,6 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
                 frame = res[0]
                 table = res[1]
                 if args.GenomicLocalization:
-                    print("HERE")
                     res = test_enrichement_regions_random_bg(bedfile,targetfile,targetname,ov_fraction,randomization, frame, table, strandness= orientation, exclude_intervals = exclude_intervals, regions_bed = regions_bed)
                     frame = res[0]
                     table = res[1]
