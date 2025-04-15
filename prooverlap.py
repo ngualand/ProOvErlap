@@ -15,47 +15,49 @@ import warnings
 from collections import Counter
 import subprocess
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy.stats import ks_2samp
 from multiprocessing import Pool
-
 
 # Suppress some warnings
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", message="the index file is older than the FASTA file")
 
-#Create argument parser
-parser = argparse.ArgumentParser()
-parser.add_argument("--mode", required = True, help = "Define mode: intersect or closest: intersect count the number of overlapping elements while closest test the distance. In closest mode if a feature overlap a target the distance is 0, use --exclude_ov to test only for non-overlapping regions")
-parser.add_argument("--input", required = True, help="Input bed file, must contain 6 or more columns, name and score can be placeholder but score is required in --RankTest mode, strand is used only if some strandess test are requested")
-parser.add_argument("--targets", required = True, help="Target bed file(s) (must contain 6 or more columns) to test enrichement against, if multiple files are supplied N independent test against each file are conducted, file names must be comma separated, the name of the file will be use as the name output")
-parser.add_argument("--background", help="Background bed file (must contain 6 or more columns), should be a superset from wich input bed file is derived")
-parser.add_argument("--randomization", type=int, help="Number of randomization, default: 100", default = 100)
-parser.add_argument("--genome", help="Genome fasta file used to retrieve sequence features like AT or GC content and length, needed only for length or AT/GC content tests")
-parser.add_argument("--tmp", default=".", help="Temporary directory for storing intermediate files. Default is current working directory")
-parser.add_argument("--outfile", required=True, help="Full path to the output file to store final results in tab format")
-parser.add_argument("--outdir", required=True, help="Full path to output directory to store tables for plot, it is suggested to use a different directory for each analysis. It will be created")
-parser.add_argument("--orientation", default = "strandless", help="Name of test(s) to be performed: concordant, discordant, strandless, or a combination of them. If multiple tests are required tests names must be comma separated, no space allowed")
-parser.add_argument("--ov_fraction", default="0.0000000001", help="Minimum overlap required as a fraction from input BED file to consider 2 features as overlapping. Default is 1E-9 (i.e. 1bp)")
-parser.add_argument("--generate_bg", action = "store_true", help="This option activatates the generation of random bed intervals to test enrichment against, use this instead of background. Use only if background file cannot be used or is not available")
-parser.add_argument("--exclude_intervals", default = None, help="Exclude regions overlapping with regions in the supplied BED file")
-parser.add_argument("--exclude_ov", action = "store_true", help="Exclude overlapping regions between Input and Target file in closest mode")
-parser.add_argument("--exclude_upstream", action = "store_true", help="Exclude upstream region in closest mode, only for stranded files, not compatible with exclude_downstream")
-parser.add_argument("--exclude_downstream", action = "store_true", help="Exclude downstream region in closest mode, only for stranded files, not compatible with exclude_upstream")
-parser.add_argument("--test_AT_GC", action = "store_true", help="Test AT and GC content")
-parser.add_argument("--test_length", action = "store_true", help="Test feature length")
-parser.add_argument("--GenomicLocalization", action = "store_true", help= "Test also the genomic localization and enrichment of founded overlaps, i.e TSS,Promoter,exons,introns,UTRs - Available only in intersect mode. Must provide a GTF file to extract genomic regions (--gtf), alternatively directly provide a bed file (--bed) with custom annotations")
-parser.add_argument("--gtf", help="GTF file, only to test genomic localization of founded overlap, gtf file will be used to create genomic regions: promoter, tss, exons, intron, 3UTR and 5UTR")
-parser.add_argument("--bed", help="BED file, only to test genomic localization of founded overlap, bed file will be used to test enrichment in different genomic regions, annotation must be stored as 4th column in bed file, i.e name field")
-parser.add_argument("--RankTest", action = "store_true", help="Activates the Ranking analyis, require BED to contain numerical value in 4th column")
-parser.add_argument("--Ascending_RankOrder", action = "store_true", help="Activate the Sort Ascending in RankTest analysis")
-parser.add_argument("--WeightRanking", action = "store_true", help="Weight the ranking test, this is done by increase or decrease the score value in the BED file based on their relative rank and/or distance and/or fractional overlap")
-parser.add_argument("--alpha", default = "0.5", type=float, help="Relative Influence of the overlap fraction/distance (with respect to ranking) in weightRanked test, only if --WeightRanking is active, must be between 0 and 1")
-parser.add_argument("--w", default = "0.25", type=float, help="Strength of the Weight for the ranking test, only if --WeightRanking is active, must be between 0 and 1")
-parser.add_argument("--thread", default = "1",type = int, help="Number of Threads for parallel computation")
+def cli():   
+    #Create argument parser
+    parser = argparse.ArgumentParser(description="ProOvErlap")
+    parser.add_argument("--mode", required = True, help = "Define mode: intersect or closest: intersect count the number of overlapping elements while closest test the distance. In closest mode if a feature overlap a target the distance is 0, use --exclude_ov to test only for non-overlapping regions")
+    parser.add_argument("--input", required = True, help="Input bed file, must contain 6 or more columns, name and score can be placeholder but score is required in --RankTest mode, strand is used only if some strandess test are requested")
+    parser.add_argument("--targets", required = True, help="Target bed file(s) (must contain 6 or more columns) to test enrichement against, if multiple files are supplied N independent test against each file are conducted, file names must be comma separated, the name of the file will be use as the name output")
+    parser.add_argument("--background", help="Background bed file (must contain 6 or more columns), should be a superset from wich input bed file is derived")
+    parser.add_argument("--randomization", type=int, help="Number of randomization, default: 100", default = 100)
+    parser.add_argument("--genome", help="Genome fasta file used to retrieve sequence features like AT or GC content and length, needed only for length or AT/GC content tests")
+    parser.add_argument("--tmp", default=".", help="Temporary directory for storing intermediate files. Default is current working directory")
+    parser.add_argument("--outfile", required=True, help="Full path to the output file to store final results in tab format")
+    parser.add_argument("--outdir", required=True, help="Full path to output directory to store tables for plot, it is suggested to use a different directory for each analysis. It will be created")
+    parser.add_argument("--orientation", default = "strandless", help="Name of test(s) to be performed: concordant, discordant, strandless, or a combination of them. If multiple tests are required tests names must be comma separated, no space allowed")
+    parser.add_argument("--ov_fraction", default="0.0000000001", help="Minimum overlap required as a fraction from input BED file to consider 2 features as overlapping. Default is 1E-9 (i.e. 1bp)")
+    parser.add_argument("--generate_bg", action = "store_true", help="This option activatates the generation of random bed intervals to test enrichment against, use this instead of background. Use only if background file cannot be used or is not available")
+    parser.add_argument("--exclude_intervals", default = None, help="Exclude regions overlapping with regions in the supplied BED file")
+    parser.add_argument("--exclude_ov", action = "store_true", help="Exclude overlapping regions between Input and Target file in closest mode")
+    parser.add_argument("--exclude_upstream", action = "store_true", help="Exclude upstream region in closest mode, only for stranded files, not compatible with exclude_downstream")
+    parser.add_argument("--exclude_downstream", action = "store_true", help="Exclude downstream region in closest mode, only for stranded files, not compatible with exclude_upstream")
+    parser.add_argument("--test_AT_GC", action = "store_true", help="Test AT and GC content")
+    parser.add_argument("--test_lengths", action = "store_true", help="Test feature length")
+    parser.add_argument("--GenomicLocalization", action = "store_true", help= "Test also the genomic localization and enrichment of founded overlaps, i.e TSS,Promoter,exons,introns,UTRs - Available only in intersect mode. Must provide a GTF file to extract genomic regions (--gtf), alternatively directly provide a bed file (--bed) with custom annotations")
+    parser.add_argument("--gtf", help="GTF file, only to test genomic localization of founded overlap, gtf file will be used to create genomic regions: promoter, tss, exons, intron, 3UTR and 5UTR")
+    parser.add_argument("--bed", help="BED file, only to test genomic localization of founded overlap, bed file will be used to test enrichment in different genomic regions, annotation must be stored as 4th column in bed file, i.e name field")
+    parser.add_argument("--RankTest", action = "store_true", help="Activates the Ranking analyis, require BED to contain numerical value in 4th column")
+    parser.add_argument("--Ascending_RankOrder", action = "store_true", help="Activate the Sort Ascending in RankTest analysis")
+    parser.add_argument("--WeightRanking", action = "store_true", help="Weight the ranking test, this is done by increase or decrease the score value in the BED file based on their relative rank and/or distance and/or fractional overlap")
+    parser.add_argument("--alpha", default = "0.5", type=float, help="Relative Influence of the overlap fraction/distance (with respect to ranking) in weightRanked test, only if --WeightRanking is active, must be between 0 and 1")
+    parser.add_argument("--w", default = "0.25", type=float, help="Strength of the Weight for the ranking test, only if --WeightRanking is active, must be between 0 and 1")
+    parser.add_argument("--thread", default = "1",type = int, help="Number of Threads for parallel computation")
 
-#Parse argument
-args = parser.parse_args()
+    #Parse argument
+    args = parser.parse_args()
+
+    main(args.mode,args.input,args.targets,args.background,args.orientation,args.genome,args.ov_fraction,args.randomization, args.outfile, args.outdir, args.exclude_intervals, args.exclude_ov, args.exclude_upstream, args.exclude_downstream, args.RankTest, args.WeightRanking, args.alpha, args.w, args.thread, args.tmp, args.GenomicLocalization, args.gtf, args.bed, args.generate_bg, args.test_AT_GC, args.test_lengths, args.Ascending_RankOrder)
+
 
 ################################## Define Functions ############################################
 
@@ -755,23 +757,23 @@ def test_closest_rank(bed,target,ov_fraction, randomization, strandness="strandl
 
 
 ###### MAIN #########
-def main(mode,input,targets,background,orientation,genome,ov_fraction,randomization,outfile, exclude_intervals = None, exclude_ov = False, exclude_upstream = False, exclude_downstream=False, RankTest = False, WeightRanking = False, alpha = 0.5, w = 0.25, thread = 1):
+def main(mode,input,targets,background,orientation,genome,ov_fraction,randomization,outfile,outdir, exclude_intervals = None, exclude_ov = False, exclude_upstream = False, exclude_downstream=False, RankTest = False, WeightRanking = False, alpha = 0.5, w = 0.25, thread = 1, tmp = ".", GenomicLocalization = False, gtf = False, bed = None, generate_bg = False, test_AT_GC = False, test_lengths = False, Ascending_RankOrder = False):
     #Check imput parameters
     check_input_parameters(mode,w,alpha)
     #Check and create tmp directory
-    create_directory(args.tmp)
+    create_directory(tmp)
     #Create Table directory
-    create_directory(args.outdir)
+    create_directory(outdir)
     #Set tmp dir for pybedtools
-    pybedtools.set_tempdir(args.tmp)   
-    if args.GenomicLocalization:
-        if args.gtf is not None:
-            subprocess.run(["Rscript", "Create_bed_genomicRegions.R", args.gtf, args.tmp, args.genome])
-            regions_bed = args.tmp + "/" + "Reference_regions.bed"
-        if args.bed is not None:
-            regions_bed = args.bed
+    pybedtools.set_tempdir(tmp)   
+    if GenomicLocalization:
+        if gtf is not None:
+            subprocess.run(["Rscript", "Create_bed_genomicRegions.R", gtf, tmp, genome])
+            regions_bed = tmp + "/" + "Reference_regions.bed"
+        if bed is not None:
+            regions_bed = bed
      
-    if args.generate_bg == False and mode == "intersect" and RankTest == False:
+    if generate_bg == False and mode == "intersect" and RankTest == False:
         print("Running intersect mode using provided background as " + background)
         #Check input files
         beds_targets = targets.split(",")
@@ -799,18 +801,18 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
                 res = test_enrichement(bedfile,targetfile,targetname,backgroundfile,ov_fraction,randomization, frame, table, strandness = orientation, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
-                if args.GenomicLocalization:
+                if GenomicLocalization:
                     res = test_enrichement_regions(bedfile,targetfile,targetname,backgroundfile,ov_fraction,randomization, frame, table, strandness = orientation, exclude_intervals = exclude_intervals, regions_bed = regions_bed)
                     frame = res[0]
                     table = res[1]
 
-        if args.test_AT_GC:
+        if test_AT_GC:
             for target in targets.split(","):
                 res = test_GC_AT(bedfile,backgroundfile,randomization,target, frame, table, genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
             
-        if args.test_length:
+        if test_lengths:
             for target in targets.split(","):
                 res = test_length(bedfile,backgroundfile,randomization, target, frame, table,genome, exclude_intervals =  exclude_intervals, thread = thread)
                 frame = res[0]
@@ -819,9 +821,9 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
         
             
         frame.to_csv(outfile, index=False, sep = "\t")
-        table.to_csv(args.outdir + "/Table_Intersect.txt", index=False, sep = "\t")
+        table.to_csv(outdir + "/Table_Intersect.txt", index=False, sep = "\t")
     
-    if args.generate_bg == False and mode == "closest" and RankTest == False:
+    if generate_bg == False and mode == "closest" and RankTest == False:
         print("Running closest mode using provided background as " + background)
         #Check input files
         beds_targets = targets.split(",")
@@ -851,13 +853,13 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
                 table = res[1]
             
     
-        if args.test_AT_GC:
+        if test_AT_GC:
             for target in targets.split(","):
                 res = test_GC_AT(bedfile,backgroundfile,randomization,target, frame, table, genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
             
-        if args.test_length:
+        if test_lengths:
             for target in targets.split(","):
                 res = test_length(bedfile,backgroundfile,randomization, target, frame, table, genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
@@ -866,10 +868,10 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
         
             
         frame.to_csv(outfile, index=False, sep = "\t")
-        table.to_csv(args.outdir + "/Table_Closest.txt", index=False, sep = "\t")
+        table.to_csv(outdir + "/Table_Closest.txt", index=False, sep = "\t")
 
     
-    if args.generate_bg == True and mode == "intersect" and RankTest == False:
+    if generate_bg == True and mode == "intersect" and RankTest == False:
         print("Running intersect mode using a random generated background")
         #Check input files
         beds_targets = targets.split(",")
@@ -896,18 +898,18 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
                 res = test_enrichement_random_bg(bedfile,targetfile,targetname,ov_fraction,randomization, frame, table, strandness= orientation, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
-                if args.GenomicLocalization:
+                if GenomicLocalization:
                     res = test_enrichement_regions_random_bg(bedfile,targetfile,targetname,ov_fraction,randomization, frame, table, strandness= orientation, exclude_intervals = exclude_intervals, regions_bed = regions_bed)
                     frame = res[0]
                     table = res[1]
     
-        if args.test_AT_GC:
+        if test_AT_GC:
             for target in targets.split(","):
                 res = test_GC_AT_random_bg(bedfile,randomization,target, frame, table, genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
             
-        if args.test_length:
+        if test_lengths:
             for target in targets.split(","):
                 res = test_length_random_bg(bedfile,randomization, target, frame, table, genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
@@ -916,9 +918,9 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
         
             
         frame.to_csv(outfile, index=False, sep = "\t")
-        table.to_csv(args.outdir + "/Table_Intersect.txt", index=False, sep = "\t")
+        table.to_csv(outdir + "/Table_Intersect.txt", index=False, sep = "\t")
     
-    if args.generate_bg == True and mode == "closest" and RankTest == False:
+    if generate_bg == True and mode == "closest" and RankTest == False:
         print("Running closest mode using a random generated background")
         #Check input files
         beds_targets = targets.split(",")
@@ -946,20 +948,20 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
                 frame = res[0]
                 table = res[1]
     
-        if args.test_AT_GC:
+        if test_AT_GC:
             for target in targets.split(","):
                 res = test_GC_AT_random_bg(bedfile,randomization,target, frame, table,genome, exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
   
-        if args.test_length:
+        if test_lengths:
             for target in targets.split(","):
                 res = test_length_random_bg(bedfile,randomization, target, frame, table,genome,  exclude_intervals = exclude_intervals, thread = thread)
                 frame = res[0]
                 table = res[1]
 
         frame.to_csv(outfile, index=False, sep = "\t")
-        table.to_csv(args.outdir + "/Table_Closest.txt", index=False, sep = "\t")
+        table.to_csv(outdir + "/Table_Closest.txt", index=False, sep = "\t")
             
     if RankTest == True and mode == "intersect":
         print("Perform Rank Mode Test using Intersect")
@@ -982,11 +984,11 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
 
         for orientation  in orientations:
             for target in targets.split(","):
-                res, forplot = test_enrichement_rank(input,target,ov_fraction, randomization, strandness=orientation,exclude_intervals = exclude_intervals, ascending = args.Ascending_RankOrder, WeightRanking = WeightRanking, alpha = alpha, w = w, thread = thread)
+                res, forplot = test_enrichement_rank(input,target,ov_fraction, randomization, strandness=orientation,exclude_intervals = exclude_intervals, ascending = Ascending_RankOrder, WeightRanking = WeightRanking, alpha = alpha, w = w, thread = thread)
                 frame = pd.concat([frame, res])
         
         frame.to_csv(outfile, index=False, sep = "\t")
-        forplot.to_csv(args.outdir + "/Table_Rank_Intersect.txt", index=False, sep = "\t")
+        forplot.to_csv(outdir + "/Table_Rank_Intersect.txt", index=False, sep = "\t")
 
     if RankTest == True and mode == "closest":
         print("Perform Rank Mode Test using Closest")
@@ -1009,12 +1011,12 @@ def main(mode,input,targets,background,orientation,genome,ov_fraction,randomizat
 
         for orientation  in orientations:
             for target in targets.split(","):
-                res, forplot = test_closest_rank(input,target,ov_fraction, randomization,strandness="strandless", exclude_intervals = None, exclude_ov = False, exclude_upstream = False, exclude_downstream=False, ascending = args.Ascending_RankOrder, WeightRanking = WeightRanking, alpha = alpha,w = w, thread = thread)
+                res, forplot = test_closest_rank(input,target,ov_fraction, randomization,strandness="strandless", exclude_intervals = None, exclude_ov = False, exclude_upstream = False, exclude_downstream=False, ascending = Ascending_RankOrder, WeightRanking = WeightRanking, alpha = alpha,w = w, thread = thread)
                 frame = pd.concat([frame, res])
         
         frame.to_csv(outfile, index=False, sep = "\t")
-        forplot.to_csv(args.outdir + "/Table_Rank_Closest.txt", index=False, sep = "\t")
+        forplot.to_csv(outdir + "/Table_Rank_Closest.txt", index=False, sep = "\t")
         
 
 if __name__ == "__main__":
-    main(args.mode,args.input,args.targets,args.background,args.orientation,args.genome,args.ov_fraction,args.randomization, args.outfile, args.exclude_intervals, args.exclude_ov, args.exclude_upstream, args.exclude_downstream, args.RankTest, args.WeightRanking, args.alpha, args.w, args.thread)
+    cli()
