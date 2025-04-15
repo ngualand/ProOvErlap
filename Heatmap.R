@@ -9,6 +9,8 @@ parser$add_argument("--input_table", help = "output of EnrichaRd with Genomic fe
 parser$add_argument("--outfile", help = "Name for output file directory, default: Heatmap", default = "Heatmap")
 parser$add_argument("--format", help = "Format of plot file, default: png", default = "png")
 parser$add_argument("--title", help = "title of the plot", default = "")
+parser$add_argument("--width", help = "Plot Width", default = "4", type="numeric")
+parser$add_argument("--heigth", help = "Plot Heigth", default = "3", type="numeric")
 
 args <- parser$parse_args()
 
@@ -52,9 +54,9 @@ P <- ggplot(Tab_for_plot, aes(x = Sample, y = Region, fill = Zscore)) +
   coord_fixed()
 
 if (args$format == "svg") {
-  ggsave(P, filename = str_c(args$outfile,".",args$format), dpi = 300)
+  ggsave(P, filename = str_c(args$outfile,".",args$format), dpi = 300, width = args$width, height = args$heigth)
 } else {
-  ggsave(P, filename = str_c(args$outfile,".",args$format), bg = "white", dpi = 300)
+  ggsave(P, filename = str_c(args$outfile,".",args$format), bg = "white", dpi = 300, width = args$width, height = args$heigth)
 }
 
   
