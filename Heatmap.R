@@ -14,11 +14,8 @@ parser$add_argument("--heigth", help = "Plot Heigth", default = "3", type="numer
 
 args <- parser$parse_args()
 
-dir.create(args$outdir)
-
 Tab = read_delim(args$input_table, col_names = T)
-
-# Sistema la tabella
+# Adjust table
 Tab_for_plot = Tab |> 
   dplyr::filter(str_detect(Target, "\\|\\|")) |> 
   #dplyr::mutate(Zscore = ifelse(P.value > 0.05, "NA", Zscore)) |> 
@@ -28,8 +25,9 @@ Tab_for_plot = Tab |>
   dplyr::mutate(Region = str_to_upper(Region)) |> 
   dplyr::mutate(Region = fct_relevel(Region, c("PROMOTER", "TSS", "5UTR", "EXON", "INTRON", "3UTR", "INTERGENIC")))
 
-#Converte valori dello Zscore in numerici
 Tab_for_plot$Zscore = as.numeric(Tab_for_plot$Zscore)
+
+
 
 # Heatmap
 P <- ggplot(Tab_for_plot, aes(x = Sample, y = Region, fill = Zscore)) +
