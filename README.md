@@ -5,6 +5,8 @@ Genomic feature overlap plays a crucial role in bioinformatics, occurring when t
 ![ProOvErlap Logo](Fig5.png)
 
 # How to install:
+ProOvErlap can be installed using pip: "pip install prooverlap"
+
 ProOvErlap does not require installation; simply run it as a Python script using:  
 python3 prooverlap.py --help  
 Please note that certain Python and R libraries must be installed for the software to function properly. Additionally, ProOvErlap relies on an external R script for specific steps, so always ensure that you execute the code from within the main ProOvErlap directory.
