@@ -5,12 +5,12 @@ library(argparse)
 
 parser <- ArgumentParser()
 
-parser$add_argument("--input_table", help = "output of EnrichaRd with Genomic features distrbution")
-parser$add_argument("--outfile", help = "Name for output file directory, default: Heatmap", default = "Heatmap")
+parser$add_argument("--input_table", help = "output of ProOvErlap with Genomic features distrbution, ProOvErlap must be run using --GenomicLocalization")
+parser$add_argument("--outfile", help = "Name for output file, default: Heatmap", default = "Heatmap")
 parser$add_argument("--format", help = "Format of plot file, default: png", default = "png")
-parser$add_argument("--title", help = "title of the plot", default = "")
-parser$add_argument("--width", help = "Plot Width", default = "4", type="numeric")
-parser$add_argument("--heigth", help = "Plot Heigth", default = "3", type="numeric")
+parser$add_argument("--title", help = "Title of the plot, default: GenomicLocalization", default = "GenomicLocalization")
+parser$add_argument("--width", help = "Plot width", default = "4", type="numeric")
+parser$add_argument("--heigth", help = "Plot heigth", default = "3", type="numeric")
 
 args <- parser$parse_args()
 
@@ -56,6 +56,4 @@ if (args$format == "svg") {
 } else {
   ggsave(P, filename = str_c(args$outfile,".",args$format), bg = "white", dpi = 300, width = args$width, height = args$heigth)
 }
-
-  
 })

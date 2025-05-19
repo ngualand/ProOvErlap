@@ -1,18 +1,19 @@
 library(ggplot2)
 library(grid)
+library(argparse, verbose = F)
 
-#arg1 = type intersect or closest
-#arg2 = input table
-#arg3 = filename
-#arg4 = filetype
-#arg5 = width
-#arg6 = height
+#Read Args
+parser <- ArgumentParser()
 
-args <- commandArgs(trailingOnly = TRUE)
+parser$add_argument("--test", help = "intersect or closest")
+parser$add_argument("--input_table", help = "Path to Table_Rank_Intersect.txt or Table_Rank_Closest.txt")
+parser$add_argument("--outfile", help = "Name for output file, default: Plot", default = "Density_plot")
+parser$add_argument("--format", help = "Format of plot file, default: png", default = "png")
+parser$add_argument("--width", help = "4", default = "4", type="numeric")
+parser$add_argument("--heigth", help = "3", default = "3", type="numeric")
+parser$add_argument("--title", help = "Title of the plot", default = "Rank test")
 
-if (length(args) < 1) {
-  stop("Usage: Rscript RankPlot.R intersect|closest table filename svg|png|jpeg|tif width height")
-}
+args <- parser$parse_args()
 
 RankPlot <- function(forplot) {
   
@@ -41,7 +42,7 @@ RankPlot <- function(forplot) {
     labs(
       x = "Ranked Region List",
       y = "Enrichment Score (ES)",
-      title = paste("Rank Enrichment Plot\nES =", round(ES, 3), "P =", formatC(Pval, format = "e", digits = 2))
+      title = paste(args$title , "\nES =", round(ES, 3), "P =", formatC(Pval, format = "e", digits = 2))
     ) +
     theme_minimal() +
     theme(#panel.background = element_rect(fill = "white", color = NA),
@@ -63,7 +64,7 @@ RankPlot <- function(forplot) {
     theme_minimal() +
     theme(plot.margin = margin(0, 0, 0, 0), 
           panel.background = element_rect(fill = "white", color = NA),
-          plot.background = element_rect(fill = "white", color = NA))  # No extra margin, occupy all space
+          plot.background = element_rect(fill = "white", color = NA))  #No extra margin, occupy all space
   
 
   
@@ -98,7 +99,7 @@ RankPlot_closest <- function(forplot) {
     labs(
       x = "Ranked Region list",
       y = "Cumulative Distribution (absolute distances)",
-      title = paste("Cumulative Distributions: Real vs Shuffle\nES =", round(ES, 3), "| P =", formatC(Pval, format = "e", digits = 2)),
+      title = paste(args$title, "\nES =", round(ES, 3), "| P =", formatC(Pval, format = "e", digits = 2)),
       color = "Legend"
     ) +
     theme_minimal() +
@@ -106,9 +107,9 @@ RankPlot_closest <- function(forplot) {
       plot.margin = margin(5, 5, 5, 5, "pt"), 
       panel.background = element_rect(fill = "white", color = NA),
       plot.background = element_rect(fill = "white", color = NA),
-      legend.text = element_text(size = 6),   # Smaller legend text
-      legend.title = element_text(size = 7),  # Smaller legend title
-      legend.key.size = unit(0.5, "lines")    # Adjust size of legend keys
+      legend.text = element_text(size = 6),   
+      legend.title = element_text(size = 7),  
+      legend.key.size = unit(0.5, "lines")    
     )
   
 
@@ -117,19 +118,19 @@ RankPlot_closest <- function(forplot) {
 
 
 
-if (args[1] == "intersect"){
-  tab = read.delim(args[2])
+if (args$test == "intersect"){
+  tab = read.delim(args$input_table)
   plot = RankPlot(tab)
-  ggsave(plot = plot[[1]], filename = paste0(args[3], "_Enrichment", ".", args[4]), 
-         width = as.numeric(args[5]), height = as.numeric(args[6]))
-  ggsave(plot = plot[[2]], filename = paste0(args[3], "_RandomDist", ".", args[4]), 
-         width = as.numeric(args[5]), height = as.numeric(args[6]))
+  ggsave(plot = plot[[1]], filename = paste0(args$outfile, "_Enrichment", ".", args$format), 
+         width = as.numeric(args$width), height = as.numeric(args$heigth))
+  ggsave(plot = plot[[2]], filename = paste0(args$outfile, "_RandomDist", ".", args$format), 
+         width = as.numeric(args$width), height = as.numeric(args$heigth))
 }
 
-if (args[1] == "closest"){
-  tab = read.delim(args[2])
+if (args$test == "closest"){
+  tab = read.delim(args$input_table)
   plot = RankPlot_closest(tab)
-  ggsave(plot = plot, filename = paste0(args[3], ".", args[4]), 
-         width = as.numeric(args[5]), height = as.numeric(args[6]))
+  ggsave(plot = plot, filename = paste0(args$outfile, ".", args$format), 
+         width = as.numeric(args$width), height = as.numeric(args$heigth))
 }
 

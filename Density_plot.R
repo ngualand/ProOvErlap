@@ -2,7 +2,7 @@ suppressMessages ({
 library(tidyverse, verbose = F)
 library(argparse, verbose = F)
 
-#lettura argomenti
+#Read Args
 parser <- ArgumentParser()
 
 parser$add_argument("--input_table", help = "Main output of ProOvErlap")
@@ -18,26 +18,23 @@ args <- parser$parse_args()
 
 try(if (!(args$test %in% c("intersect", "closest"))) stop("test argument should be intersect or closest"))
 
-
 if (args$test == "intersect"){
 	Xlab = "Number of intersection"
 }
 if (args$test == "closest"){
         Xlab = "Mean distance"
 }
-#Legge la tabella con le randomizzazioni e seleziona solo la colonna Count
+#Read files
 randomizations <- read_delim(args$randomizations, col_names = T)
-
-#legge output principale di EnrichaRd.py
 Results <- read_delim(args$input_table, col_names = T)
 
 
-#Density plot
+#Density plot function
 makeDensityplot <- function(Zscore, Type, Pvalue, Real, Random, Name, Outfile, Format, width, heigth) {
 
-    #seleziona le righe del df con le randomizzazioni solo per il target della corrispondente riga di output
+    #Select correct rows
     random_df_name <- randomizations %>%
-        dplyr::filter(Target == !!Name & Name == !!Type & Type != "Real") #qua secondo me sono da sistemare
+        dplyr::filter(Target == !!Name & Name == !!Type & Type != "Real")
 
     Random = mean(random_df_name$Count)
 
@@ -59,7 +56,7 @@ makeDensityplot <- function(Zscore, Type, Pvalue, Real, Random, Name, Outfile, F
                linetype = "dashed",
                linewidth = 1) +
     labs(x = NULL,
-         title = str_c(Name," ",Type),
+         title = str_c(gsub("\\|\\|", " | ", Name)," | ",Type),
          subtitle = str_c(
                         "Randomizations = ", NPerm,"\n",
                         "Z-score = ", round(Zscore, digits = 2),"\n",
@@ -72,5 +69,4 @@ ggsave(plot = Plot, filename = str_c(Outfile,"_",Name,"_",Type,".",Format), dpi 
 }    
 
 apply(Results, 1, function(x) makeDensityplot(as.numeric(x["Zscore"]), x["Type"], as.numeric(x["P.value"]), as.numeric(x["Real"]), as.numeric(x["Random"]), x["Target"], args$outfile, args$format, args$width, args$heigth))
-
 })
