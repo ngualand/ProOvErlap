@@ -21,6 +21,7 @@ from multiprocessing import Pool
 #Suppress some warnings
 warnings.filterwarnings("ignore")
 warnings.filterwarnings("ignore", message="the index file is older than the FASTA file")
+
 ################################## Define Functions ############################################
 
 #Create directory if not exist, if exist print it and exit
@@ -322,10 +323,10 @@ def test_length(bed,background,randomization, target, frame, table, genome, excl
         real_length = statistics.mean(nucleotide_content["15_seq_len"].to_list())
         random_count_length = []
         background_df = background.to_dataframe(header=None)   
-    with Pool(processes=thread) as pool:  # Adjust number of processes
+    with Pool(processes=thread) as pool:  
         # Prepare arguments as list of tuples for starmap
         args = [(background_df, bed, genome)] * randomization
-        random_count_length = pool.starmap(compute_length, args)  # Run in parallel
+        random_count_length = pool.starmap(compute_length, args)  
     zscore = compute_z_score(real_length,random_count_length)
     pvalue = compute_pvalue(zscore)
     frame = save_results(zscore, "Length", pvalue, os.path.basename(target), real_length, statistics.mean(random_count_length), statistics.stdev(random_count_length), frame)
@@ -360,7 +361,7 @@ def test_GC_AT(bed,background,randomization, target, frame, table, genome, exclu
         background_df = background.to_dataframe(header=None)   
     with Pool(processes=thread) as pool:
         args = [(background_df, bed, genome)] * randomization
-        results = pool.starmap(compute_gc_at, args)  # Run in parallel
+        results = pool.starmap(compute_gc_at, args)  
     random_count_GC, random_count_AT = zip(*results)
     zscore_GC = compute_z_score(real_GC,random_count_GC)
     pvalue_GC = compute_pvalue(zscore_GC)
