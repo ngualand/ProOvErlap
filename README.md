@@ -212,7 +212,7 @@ ProOvErlap was developed by Nicolò Gualandi (former post-doc in the Laboratory 
 
 ProOvErlap is actively being improved. If you find any bugs, errors, or anything that doesn't seem right, please feel free to get in touch with us. If you would like to contribute, we welcome your comments and feedback.
 
-#Citation
+# Citation
 If you use ProOvErlap in your research or publication, please cite it as:
 
 Gualandi N, Bertozzo A, Brancolini C. ProOvErlap: Assessing feature proximity/overlap and testing statistical significance from genomic intervals. J Biol Chem. 2025 May 7:110209. doi: 10.1016/j.jbc.2025.110209. Epub ahead of print. PMID: 40345582.
