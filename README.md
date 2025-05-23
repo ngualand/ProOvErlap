@@ -209,7 +209,7 @@ RankTest.R Required arguments:
 
 # Parameters and options recommendations
 
-```
+
 Input File (BED format) (--input): The input must be a BED file with genomic regions, which can have 6 or more columns. For a file with more than 6 columns, only the first 6 columns are used for the analysis. If a ranking analysis is used, the 5th column of the BED file must contain the numerical scores for each genomic region. The BED file represents the regions of interest in a genomic context, e.g. peaks from a ChIP-seq experiment or other identified genomic features such as genes, promoters, enhancers or any kind of genomic interval that can be described by a chromosome, start and end position.  
 
 Target File(s) (--target): This parameter allows one or more BED target files to be specified in a comma-separated list. The target file represents the regions to be tested for overlap or proximity (i.e. closest distance). The analysis checks whether the regions from the input file overlap with at least one region in the target file, or calculates the distance to the closest feature in the target file. If several target files are specified, each target file is analysed independently.  
@@ -275,7 +275,6 @@ Weighted ranking and weighting parameters should be used with caution as they ca
 
 Parallelization (--thread): This parameter defines the number of threads to be used for parallel processing. The use of several threads can speed up the analysis, especially with large data sets or numerous randomizations. Recommended: all available threads.  
 
-```
 
 # Development 
 ProOvErlap was developed by Nicolò Gualandi (former post-doc in the Laboratory of Prof. Claudio Brancolini @ UniUd) and Alessio Bertozzo (PhD student in the Laboratory of Prof. Claudio Brancolini @ UniUd), under the supervision of Prof. Claudio Brancolini (Professor of Cell Biology, Department of Medicine, Università degli Studi di Udine, https://people.uniud.it/page/claudio.brancolini)  
