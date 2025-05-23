@@ -143,7 +143,7 @@ options:
                         different genomic regions, annotation must be stored as
                         4th column in bed file, i.e name field
   --RankTest            Activates the Ranking analyis, require BED to contain
-                        numerical value in 4th column
+                        numerical value in 5th column
   --Ascending_RankOrder
                         Activate the Sort Ascending in RankTest analysis
   --WeightRanking       Weight the ranking test, this is done by increase or

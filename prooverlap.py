@@ -1006,7 +1006,7 @@ def cli():
     parser.add_argument("--GenomicLocalization", action = "store_true", help= "Test also the genomic localization and enrichment of founded overlaps, i.e TSS,Promoter,exons,introns,UTRs - Available only in intersect mode. Must provide a GTF file to extract genomic regions (--gtf), alternatively directly provide a bed file (--bed) with custom annotations")
     parser.add_argument("--gtf", help="GTF file, only to test genomic localization of founded overlap, gtf file will be used to create genomic regions: promoter, tss, exons, intron, 3UTR and 5UTR")
     parser.add_argument("--bed", help="BED file, only to test genomic localization of founded overlap, bed file will be used to test enrichment in different genomic regions, annotation must be stored as 4th column in bed file, i.e name field")
-    parser.add_argument("--RankTest", action = "store_true", help="Activates the Ranking analyis, require BED to contain numerical value in 4th column")
+    parser.add_argument("--RankTest", action = "store_true", help="Activates the Ranking analyis, require BED to contain numerical value in 5th column")
     parser.add_argument("--Ascending_RankOrder", action = "store_true", help="Activate the Sort Ascending in RankTest analysis")
     parser.add_argument("--WeightRanking", action = "store_true", help="Weight the ranking test, this is done by increase or decrease the score value in the BED file based on their relative rank and/or distance and/or fractional overlap")
     parser.add_argument("--alpha", default = "0.5", type=float, help="Relative Influence of the overlap fraction/distance (with respect to ranking) in weightRanked test, only if --WeightRanking is active, must be between 0 and 1")
