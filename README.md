@@ -284,7 +284,7 @@ ProOvErlap is actively being improved. If you find any bugs, errors, or anything
 # Citation
 If you use ProOvErlap in your research or publication, please cite it as:
 
-Gualandi N, Bertozzo A, Brancolini C. ProOvErlap: Assessing feature proximity/overlap and testing statistical significance from genomic intervals. J Biol Chem. 2025 May 7:110209. doi: 10.1016/j.jbc.2025.110209. Epub ahead of print. PMID: 40345582.
+Gualandi N, Bertozzo A, Brancolini C. ProOvErlap: Assessing feature proximity/overlap and testing statistical significance from genomic intervals. J Biol Chem. 2025 Jun;301(6):110209. doi: 10.1016/j.jbc.2025.110209. Epub 2025 May 8. PMID: 40345582; PMCID: PMC12172997.
 
 Thank you!
 
